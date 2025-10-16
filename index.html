@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>蛙猫 ($TOFU) | Frog Cat Meme Coin</title>
-  <link rel="icon" type="image/png" href="https://pbs.twimg.com/media/G3VpmBoacAAGUB2?format=jpg&name=360x360">
+  <link rel="icon" type="image/png" href="./tofu.jpg">
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load a fun, meme-like Google Font (Bangers) -->
@@ -85,10 +85,12 @@
 
     <!-- Global Localization Data -->
     <script>
-        const CA = "0x2587ECCe46afE23E436436d66baEAc05948b4444"; // UPDATED CA
+        const CA = "0x2587ECCe46afE23E436436d66baEAc05948b4444"; 
         const LANG_KEY = 'tofuLang';
-        const LOGO_URL = "https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360";
+        // UPDATED: Using local file name for the logo image
+        const LOGO_URL = "./tofu.jpg"; 
         let BASE_IMAGE_B64 = null; // Stores { base64: string, mimeType: string }
+        
 
         const L10N = {
             en: {
@@ -109,7 +111,7 @@
                 creator_title: 'AI Frog Cat Editor', 
                 creator_base_loading: 'Loading base image...',
                 creator_base_ready: 'Base image ready for editing.',
-                creator_base_error: 'Error loading base image.',
+                creator_base_error: 'Error loading base image. (CORS/Network)',
                 creator_prompt_placeholder: 'Describe the modification (e.g., Add a gold crown and a royal robe)...', 
                 creator_button: 'Edit Frog Cat Image', 
                 creator_loading: 'Generating image, please wait...', 
@@ -135,7 +137,7 @@
                 creator_title: 'AI 蛙猫编辑器', 
                 creator_base_loading: '正在加载基础图像...',
                 creator_base_ready: '基础图像已准备好编辑。',
-                creator_base_error: '加载基础图像失败。',
+                creator_base_error: '加载基础图像失败。（跨域/网络）',
                 creator_prompt_placeholder: '描述修改内容（例如：添加金色皇冠和皇家长袍）...', 
                 creator_button: '编辑蛙猫图像', 
                 creator_loading: '正在生成图像，请稍候...', 
@@ -193,6 +195,8 @@
 
         /**
          * Converts a URL image to a Base64 string for API use.
+         * Note: This relies on the image being served from a domain that allows CORS,
+         * or being a local/relative file path like './tofu.jpg' which typically works in Canvas.
          */
         async function urlToBase64(url) {
             try {
@@ -216,8 +220,9 @@
                     reader.readAsDataURL(blob);
                 });
             } catch (error) {
-                console.error("Failed to fetch or convert image to Base64:", error);
-                return null;
+                console.error("Failed to fetch or convert image to Base64 (CORS/Network Issue):", error);
+                // Return null on failure to indicate the base image is not ready
+                return null; 
             }
         }
         
@@ -240,6 +245,7 @@
                 baseImageStatus.classList.add('text-green-500');
                 baseImagePreview.classList.remove('opacity-50');
             } else {
+                // Show specific error for Base image failure
                 baseImageStatus.textContent = L10N[currentLang].creator_base_error;
                 baseImageStatus.classList.remove('text-blue-500', 'text-green-500');
                 baseImageStatus.classList.add('text-red-500');
@@ -468,7 +474,8 @@
             <div class="flex justify-between items-center h-20">
                 <!-- Logo and Title -->
                 <div class="flex items-center space-x-3">
-                    <img src="https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/60x60/8b5cf6/ffffff?text=$TOFU';" alt="Frog Cat Logo" class="h-12 w-12 rounded-full ring-4 ring-yellow-500 shadow-xl">
+                    <!-- UPDATED SRC: Using local file -->
+                    <img src="./tofu.jpg" onerror="this.onerror=null;this.src='https://placehold.co/60x60/8b5cf6/ffffff?text=$TOFU';" alt="Frog Cat Logo" class="h-12 w-12 rounded-full ring-4 ring-yellow-500 shadow-xl">
                     <!-- UPDATED: Title text color from text-purple-600 to text-yellow-700 -->
                     <span class="font-meme text-3xl text-yellow-700 tracking-wider hidden sm:block">蛙猫 $TOFU</span>
                 </div>
@@ -508,7 +515,7 @@
                     <div class="hidden lg:block">
                         <span id="ca-label" class="text-sm font-medium text-gray-500 hidden xl:inline">Contract Address:</span>
                         <button id="ca-copy-button" class="flex items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 rounded-full font-bold transition duration-300 shadow-md transform hover:scale-[1.02]">
-                            <span id="ca-text" class="text-sm font-semibold">0x2587...b4444</span>
+                            <span id="ca-text" class="text-sm font-semibold">${CA.substring(0, 6)}...${CA.slice(-4)}</span>
                             <i class="fa-solid fa-copy text-xs"></i>
                         </button>
                     </div>
@@ -521,7 +528,8 @@
 
         <!-- Hero / Banner Section -->
         <section class="text-center py-16 sm:py-24 bg-white card shadow-2xl mt-8 transform hover:shadow-yellow-400/50 transition duration-500">
-            <img src="https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/150x150/8b5cf6/ffffff?text=$TOFU';" alt="Frog Cat Hero Image" class="h-40 w-40 mx-auto rounded-full ring-8 ring-yellow-500 mb-6 shadow-2xl animate-spin-slow">
+            <!-- UPDATED SRC: Using local file -->
+            <img src="./tofu.jpg" onerror="this.onerror=null;this.src='https://placehold.co/150x150/8b5cf6/ffffff?text=$TOFU';" alt="Frog Cat Hero Image" class="h-40 w-40 mx-auto rounded-full ring-8 ring-yellow-500 mb-6 shadow-2xl animate-spin-slow">
             
             <!-- UPDATED: Hero Title text color from text-purple-700 to text-yellow-800 -->
             <h1 id="hero-title" class="font-meme text-6xl sm:text-7xl lg:text-8xl text-yellow-800 leading-tight mb-2 animate-pulse-pop">
@@ -642,8 +650,9 @@
                 <div class="text-center">
                     <h3 class="font-bold text-xl mb-2 text-gray-700">Image to be Edited (Frog Cat Logo)</h3>
                     <div id="base-image-status" class="text-sm text-blue-500 mb-2">Loading base image...</div>
+                    <!-- UPDATED SRC: Using local file -->
                     <img id="base-image-preview" 
-                         src="" 
+                         src="./tofu.jpg" 
                          alt="Base Frog Cat Logo" 
                          class="mx-auto h-24 w-24 rounded-full ring-4 ring-yellow-500 object-cover opacity-50 transition duration-500">
                 </div>
