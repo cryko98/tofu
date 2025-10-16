@@ -195,25 +195,36 @@
 
         /**
          * Converts a URL image to a Base64 string for API use.
-         * Note: This relies on the image being served from a domain that allows CORS,
-         * or being a local/relative file path like './tofu.jpg' which typically works in Canvas.
          */
         async function urlToBase64(url) {
             try {
+                // Check if the URL is valid before fetching
+                if (!url || url.startsWith('data:') || url.includes('placehold.co')) {
+                    throw new Error("Invalid or placeholder URL for Base64 conversion.");
+                }
+
                 const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const blob = await response.blob();
+                
+                // Use FileReader to get the Base64 data
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onloadend = () => {
                         if (!reader.result) {
                             return reject(new Error("FileReader result is null."));
                         }
-                        // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
-                        const base64 = reader.result.split(',')[1];
-                        const mimeType = blob.type;
+                        const dataUrl = reader.result;
+                        const [mimeTypePart, base64] = dataUrl.split(';base64,');
+                        const mimeType = mimeTypePart.split(':')[1];
+                        
+                        // Ensure we have both parts
+                        if (!base64 || !mimeType) {
+                            return reject(new Error("Failed to parse data URL into Base64 and MIME type."));
+                        }
+                        
                         resolve({ base64, mimeType });
                     };
                     reader.onerror = reject;
@@ -228,16 +239,25 @@
         
         /**
          * Loads the base image (logo) into the global variable and updates the UI.
+         * FIX: Uses the resolved absolute URL from the DOM element's 'src' property 
+         * instead of the relative path constant to avoid 'Failed to parse URL' error.
          */
         const loadBaseImage = async () => {
             const baseImageStatus = document.getElementById('base-image-status');
             const baseImagePreview = document.getElementById('base-image-preview');
 
             baseImageStatus.textContent = L10N[currentLang].creator_base_loading;
-            baseImagePreview.src = LOGO_URL;
             
-            const result = await urlToBase64(LOGO_URL);
-            BASE_IMAGE_B64 = result;
+            // Wait until the image element itself has resolved the URL.
+            // This ensures we get a full, absolute URL (e.g., blob:https://...)
+            const resolvedUrl = baseImagePreview.src;
+
+            // Only proceed if the URL looks resolved and is not the placeholder or empty
+            if (resolvedUrl && !resolvedUrl.includes('placehold.co')) {
+                const result = await urlToBase64(resolvedUrl); // Use resolved URL here!
+                BASE_IMAGE_B64 = result;
+            }
+
 
             if (BASE_IMAGE_B64) {
                 baseImageStatus.textContent = L10N[currentLang].creator_base_ready;
@@ -461,7 +481,11 @@
         // Initialize on load
         window.onload = () => {
             switchLang(currentLang);
-            loadBaseImage(); // Load the base image asynchronously
+            
+            // FIX: Load the base image only after the DOM has rendered, which gives the browser time to resolve './tofu.jpg'
+            // We use setTimeout to ensure the browser has definitely processed the image src attribute.
+            setTimeout(loadBaseImage, 100); 
+
             document.getElementById('ca-copy-button').addEventListener('click', copyCA);
             document.getElementById('creator-button').addEventListener('click', generateImage);
         };
