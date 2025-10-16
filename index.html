@@ -10,7 +10,7 @@
     <!-- Load a fun, meme-like Google Font (Bangers) -->
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <!-- Font Awesome for X.com icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzLQQkASO/st4Df+6p0yRkCFAg/uN9W6K6U5fC4J0Cg+H4tHlF7M/T9+xL6tA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzLQQkASO/st4Df+6p0yRkCFAg/uNN9W6K6U5fC4J0Cg+H4tHlF7M/T9+xL6tA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <!-- TikTok Embed Script -->
     <script async src="https://www.tiktok.com/embed.js"></script>
@@ -85,7 +85,7 @@
 
     <!-- Global Localization Data -->
     <script>
-        const CA = "0x2587ecce46afe23e436436d66baeac05948b4444";
+        const CA = "0x2587ECCe46afE23E436436d66baEAc05948b4444"; // UPDATED CA
         const LANG_KEY = 'tofuLang';
         const LOGO_URL = "https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360";
         let BASE_IMAGE_B64 = null; // Stores { base64: string, mimeType: string }
@@ -149,22 +149,32 @@
         
         /**
          * Copies the contract address to the clipboard.
+         * FIX: Switched to document.execCommand('copy') exclusively for reliable iframe clipboard access.
          */
         const copyCA = async () => {
             const caText = document.getElementById('ca-text').textContent;
+            let success = false;
+            
             try {
-                // Use the safer method first, falling back to execCommand
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(CA);
-                } else {
-                    const textarea = document.createElement('textarea');
-                    textarea.value = CA;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                }
+                // Use the execCommand fallback method, which is often allowed in iframes.
+                const textarea = document.createElement('textarea');
+                textarea.value = CA;
+                textarea.style.position = 'fixed'; // Prevents scrolling to the element
+                textarea.style.top = '0';
+                textarea.style.left = '0';
+                document.body.appendChild(textarea);
+                textarea.focus();
+                textarea.select();
                 
+                success = document.execCommand('copy');
+                document.body.removeChild(textarea);
+
+            } catch (err) {
+                console.error('Failed to copy text using execCommand:', err);
+                success = false;
+            }
+
+            if (success) {
                 // Show confirmation message
                 const caButton = document.getElementById('ca-copy-button');
                 const originalText = caButton.innerHTML;
@@ -178,10 +188,6 @@
                     caButton.classList.add('bg-yellow-400');
                     caButton.innerHTML = originalText;
                 }, 1500);
-
-            } catch (err) {
-                console.error('Failed to copy text:', err);
-                // Optionally show a failure message
             }
         };
 
@@ -191,10 +197,16 @@
         async function urlToBase64(url) {
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const blob = await response.blob();
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onloadend = () => {
+                        if (!reader.result) {
+                            return reject(new Error("FileReader result is null."));
+                        }
                         // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
                         const base64 = reader.result.split(',')[1];
                         const mimeType = blob.type;
@@ -219,16 +231,17 @@
             baseImageStatus.textContent = L10N[currentLang].creator_base_loading;
             baseImagePreview.src = LOGO_URL;
             
-            BASE_IMAGE_B64 = await urlToBase64(LOGO_URL);
+            const result = await urlToBase64(LOGO_URL);
+            BASE_IMAGE_B64 = result;
 
             if (BASE_IMAGE_B64) {
                 baseImageStatus.textContent = L10N[currentLang].creator_base_ready;
-                baseImageStatus.classList.remove('text-blue-500');
+                baseImageStatus.classList.remove('text-blue-500', 'text-red-500');
                 baseImageStatus.classList.add('text-green-500');
                 baseImagePreview.classList.remove('opacity-50');
             } else {
                 baseImageStatus.textContent = L10N[currentLang].creator_base_error;
-                baseImageStatus.classList.remove('text-blue-500');
+                baseImageStatus.classList.remove('text-blue-500', 'text-green-500');
                 baseImageStatus.classList.add('text-red-500');
             }
         };
@@ -276,6 +289,7 @@
             // Update button text if it was showing 'CA Copied!'
             const caButton = document.getElementById('ca-copy-button');
              if (!caButton.classList.contains('bg-green-500')) {
+                // Display the new CA in a shortened form
                 caButton.innerHTML = `<span id="ca-text" class="text-sm font-semibold">${CA.substring(0, 6)}...${CA.slice(-4)}</span>`;
             }
 
@@ -289,9 +303,9 @@
 
             // Update base image status text
             const baseImageStatus = document.getElementById('base-image-status');
-            if (!BASE_IMAGE_B64 && baseImageStatus) {
+            if (baseImageStatus && !BASE_IMAGE_B64) {
                  baseImageStatus.textContent = langData.creator_base_loading;
-            } else if (BASE_IMAGE_B64) {
+            } else if (baseImageStatus && BASE_IMAGE_B64) {
                  baseImageStatus.textContent = langData.creator_base_ready;
             }
         };
@@ -424,7 +438,8 @@
                         imageStatus.classList.add('hidden');
 
                     } else {
-                        throw new Error("No image data received.");
+                        // Throw error if JSON structure is valid but no image data is present
+                        throw new Error("No image data received in valid response.");
                     }
                 } catch (e) {
                     console.error('Error processing image response:', e);
@@ -674,7 +689,7 @@
                 <!-- Dexscreener Iframe Embed -->
                 <div id="dexscreener-embed">
                     <iframe 
-                        src="https://dexscreener.com/bsc/0x2587ecce46afe23e436436d66baeac05948b4444?embed=1&loadChartSettings=0&chartLeftToolbar=0&chartTheme=dark&theme=light&chartStyle=0&chartType=usd&interval=15"
+                        src="https://dexscreener.com/bsc/0x2587ECCe46afE23E436436d66baEAc05948b4444?embed=1&loadChartSettings=0&chartLeftToolbar=0&chartTheme=dark&theme=light&chartStyle=0&chartType=usd&interval=15"
                         allow="clipboard-write">
                     </iframe>
                 </div>
@@ -694,7 +709,7 @@
                 $TOFU - Built on the BNB Chain. Meme Safely.
             </p>
             <p class="text-xs mt-2 opacity-80">
-                CA: 0x2587ecce46afe23e436436d66baeac05948b4444
+                CA: 0x2587ECCe46afE23E436436d66baEAc05948b4444
             </p>
         </div>
     </footer>
