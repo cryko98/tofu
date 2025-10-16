@@ -87,41 +87,59 @@
     <script>
         const CA = "0x2587ecce46afe23e436436d66baeac05948b4444";
         const LANG_KEY = 'tofuLang';
-        
+        const LOGO_URL = "https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360";
+        let BASE_IMAGE_B64 = null; // Stores { base64: string, mimeType: string }
+
         const L10N = {
             en: {
                 nav_about: 'About $TOFU',
                 nav_gallery: 'Meme Gallery',
-                nav_tiktok: 'TikTok Video', // NEW
+                nav_tiktok: 'TikTok Video',
+                nav_creator: 'AI Editor', 
                 nav_chart: 'Live Chart',
                 header_ca: 'Contract Address',
                 ca_copied: 'CA Copied!',
-                // UPDATED HERO TEXT
                 hero_title: 'Welcome to the FrogCat community!',
                 hero_ticker: 'TOFU Conquers BNB after TikTok Domination',
                 about_title: 'What is Frog Cat ($TOFU)?',
                 about_p1: '$TOFU is the newest and fluffiest meme coin hopping onto the **BNB Chain**! Inspired by the viral sensation **蛙猫 (Frog Cat)**, a ridiculously cute cat that sits exactly like a frog, $TOFU captures the internet\'s love for unexpected cuteness and high-octane memetic energy.',
                 about_p2: 'Join the #FrogCat army and let\'s turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!',
                 gallery_title: 'The Glorious $TOFU Meme Gallery',
-                tiktok_title: 'Viral TikTok Video', // NEW
+                tiktok_title: 'Viral TikTok Video',
+                creator_title: 'AI Frog Cat Editor', 
+                creator_base_loading: 'Loading base image...',
+                creator_base_ready: 'Base image ready for editing.',
+                creator_base_error: 'Error loading base image.',
+                creator_prompt_placeholder: 'Describe the modification (e.g., Add a gold crown and a royal robe)...', 
+                creator_button: 'Edit Frog Cat Image', 
+                creator_loading: 'Generating image, please wait...', 
+                creator_error: 'Image generation failed. Please try again.', 
                 chart_title: '$TOFU Live Price Chart',
                 footer_text: '$TOFU - Built on the BNB Chain. Meme Safely.'
             },
             zh: {
                 nav_about: '关于 蛙猫',
                 nav_gallery: '表情包图库',
-                nav_tiktok: '抖音视频', // NEW
+                nav_tiktok: '抖音视频',
+                nav_creator: 'AI 编辑器', 
                 nav_chart: '实时图表',
                 header_ca: '合约地址',
                 ca_copied: '已复制!',
-                // UPDATED HERO TEXT (Mandarin)
                 hero_title: '欢迎来到 蛙猫 🐸🐱 社区!',
                 hero_ticker: '继 TikTok 之后，TOFU 征服 BNB 链',
                 about_title: '什么是 蛙猫 ($TOFU)?',
                 about_p1: '$TOFU 是最新、最可爱的迷因币，正在跳上 **BNB 链**！它的灵感来自于病毒式传播的 **蛙猫 (Frog Cat)**——一只坐姿与青蛙完全一样的可爱猫咪。$TOFU 抓住了互联网对意想不到的可爱和高能迷因能量的热爱。',
                 about_p2: '加入 #蛙猫 大军，让我们把这个可爱的迷因变成一场金融现象。未来是可爱、绿色，并且带着一丝豆腐的香气！',
                 gallery_title: '蛙猫 $TOFU 荣耀图库',
-                tiktok_title: '病毒式抖音视频', // NEW
+                tiktok_title: '病毒式抖音视频',
+                creator_title: 'AI 蛙猫编辑器', 
+                creator_base_loading: '正在加载基础图像...',
+                creator_base_ready: '基础图像已准备好编辑。',
+                creator_base_error: '加载基础图像失败。',
+                creator_prompt_placeholder: '描述修改内容（例如：添加金色皇冠和皇家长袍）...', 
+                creator_button: '编辑蛙猫图像', 
+                creator_loading: '正在生成图像，请稍候...', 
+                creator_error: '图像生成失败，请重试。', 
                 chart_title: '蛙猫 实时价格图表',
                 footer_text: '$TOFU - 基于 BNB 链。安全迷因。'
             }
@@ -168,6 +186,55 @@
         };
 
         /**
+         * Converts a URL image to a Base64 string for API use.
+         */
+        async function urlToBase64(url) {
+            try {
+                const response = await fetch(url);
+                const blob = await response.blob();
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+                        const base64 = reader.result.split(',')[1];
+                        const mimeType = blob.type;
+                        resolve({ base64, mimeType });
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (error) {
+                console.error("Failed to fetch or convert image to Base64:", error);
+                return null;
+            }
+        }
+        
+        /**
+         * Loads the base image (logo) into the global variable and updates the UI.
+         */
+        const loadBaseImage = async () => {
+            const baseImageStatus = document.getElementById('base-image-status');
+            const baseImagePreview = document.getElementById('base-image-preview');
+
+            baseImageStatus.textContent = L10N[currentLang].creator_base_loading;
+            baseImagePreview.src = LOGO_URL;
+            
+            BASE_IMAGE_B64 = await urlToBase64(LOGO_URL);
+
+            if (BASE_IMAGE_B64) {
+                baseImageStatus.textContent = L10N[currentLang].creator_base_ready;
+                baseImageStatus.classList.remove('text-blue-500');
+                baseImageStatus.classList.add('text-green-500');
+                baseImagePreview.classList.remove('opacity-50');
+            } else {
+                baseImageStatus.textContent = L10N[currentLang].creator_base_error;
+                baseImageStatus.classList.remove('text-blue-500');
+                baseImageStatus.classList.add('text-red-500');
+            }
+        };
+
+
+        /**
          * Updates all text elements based on the current language.
          */
         const updateText = () => {
@@ -176,7 +243,8 @@
             // Update Navigation Links
             document.getElementById('nav-about').textContent = langData.nav_about;
             document.getElementById('nav-gallery').textContent = langData.nav_gallery;
-            document.getElementById('nav-tiktok').textContent = langData.nav_tiktok; // NEW
+            document.getElementById('nav-tiktok').textContent = langData.nav_tiktok;
+            document.getElementById('nav-creator').textContent = langData.nav_creator;
             document.getElementById('nav-chart').textContent = langData.nav_chart;
             
             // Update Header CA Text
@@ -188,13 +256,18 @@
 
             // Update About Section
             document.getElementById('about-title').textContent = langData.about_title;
-            // UPDATED: Changed text-pink-600 to text-yellow-600
             document.getElementById('about-p1').innerHTML = langData.about_p1.replace('**BNB Chain**', '<strong class="text-yellow-600">BNB Chain</strong>');
             document.getElementById('about-p2').textContent = langData.about_p2;
 
             // Update Gallery, TikTok, and Chart
             document.getElementById('gallery-title').textContent = langData.gallery_title;
-            document.getElementById('tiktok-title').textContent = langData.tiktok_title; // NEW
+            document.getElementById('tiktok-title').textContent = langData.tiktok_title;
+            
+            // Update Creator
+            document.getElementById('creator-title').textContent = langData.creator_title;
+            document.getElementById('creator-prompt').placeholder = langData.creator_prompt_placeholder;
+            document.getElementById('creator-button').textContent = langData.creator_button;
+
             document.getElementById('chart-title').textContent = langData.chart_title;
 
             // Update Footer
@@ -204,6 +277,22 @@
             const caButton = document.getElementById('ca-copy-button');
              if (!caButton.classList.contains('bg-green-500')) {
                 caButton.innerHTML = `<span id="ca-text" class="text-sm font-semibold">${CA.substring(0, 6)}...${CA.slice(-4)}</span>`;
+            }
+
+            // Update loading/error messages if visible
+            const imageStatus = document.getElementById('image-status');
+            if (imageStatus.classList.contains('bg-blue-100')) {
+                imageStatus.textContent = langData.creator_loading;
+            } else if (imageStatus.classList.contains('bg-red-100')) {
+                 imageStatus.textContent = langData.creator_error;
+            }
+
+            // Update base image status text
+            const baseImageStatus = document.getElementById('base-image-status');
+            if (!BASE_IMAGE_B64 && baseImageStatus) {
+                 baseImageStatus.textContent = langData.creator_base_loading;
+            } else if (BASE_IMAGE_B64) {
+                 baseImageStatus.textContent = langData.creator_base_ready;
             }
         };
 
@@ -224,10 +313,136 @@
             document.getElementById('lang-' + lang).classList.remove('bg-gray-200', 'text-gray-700');
         };
 
+        // --- AI IMAGE GENERATION LOGIC ---
+
+        const generateImage = async () => {
+            const prompt = document.getElementById('creator-prompt').value.trim();
+            const imageStatus = document.getElementById('image-status');
+            const generateButton = document.getElementById('creator-button');
+            const apiKey = ""; // Canvas handles API key injection
+
+            if (!prompt) {
+                // IMPORTANT: Use custom UI instead of alert()
+                imageStatus.classList.remove('hidden', 'bg-blue-100');
+                imageStatus.classList.add('bg-red-100');
+                imageStatus.textContent = "Please enter a description for your Frog Cat meme edit!";
+                return;
+            }
+
+            if (!BASE_IMAGE_B64) {
+                 imageStatus.classList.remove('hidden', 'bg-blue-100');
+                 imageStatus.classList.add('bg-red-100');
+                 imageStatus.textContent = L10N[currentLang].creator_base_error;
+                 return;
+            }
+
+
+            // 1. Show Loading State
+            generateButton.disabled = true;
+            generateButton.classList.remove('bg-yellow-600');
+            generateButton.classList.add('bg-gray-400');
+
+            imageStatus.classList.remove('hidden', 'bg-red-100', 'bg-red-500');
+            imageStatus.classList.add('bg-blue-100');
+            imageStatus.textContent = L10N[currentLang].creator_loading;
+            document.getElementById('generated-image').src = '';
+            document.getElementById('generated-image').classList.add('hidden');
+
+
+            // Use gemini-2.5-flash-image-preview for image-to-image editing
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            
+            // We use the prompt directly as the text part, as the base image is the other part.
+            // The model is instructed to modify the image based on the text.
+            const userPrompt = prompt;
+
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            { text: userPrompt }, // The modification prompt
+                            {
+                                inlineData: {
+                                    mimeType: BASE_IMAGE_B64.mimeType,
+                                    data: BASE_IMAGE_B64.base64
+                                }
+                            } // The base image to be edited
+                        ]
+                    }
+                ],
+                // Requesting an image output
+                generationConfig: {
+                    responseModalities: ["IMAGE"]
+                }
+            };
+
+            const maxRetries = 3;
+            let response = null;
+            let success = false;
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    // Exponential backoff
+                    if (i > 0) {
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                    
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        success = true;
+                        break;
+                    }
+                } catch (error) {
+                    console.error('Fetch attempt failed:', error);
+                }
+            }
+
+            // 2. Process Result
+            generateButton.disabled = false;
+            generateButton.classList.remove('bg-gray-400');
+            generateButton.classList.add('bg-yellow-600');
+            imageStatus.classList.remove('bg-blue-100');
+            
+            if (success && response) {
+                try {
+                    const result = await response.json();
+                    
+                    // Parsing response for gemini-2.5-flash-image-preview (generateContent)
+                    const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                    if (base64Data) {
+                        const imageUrl = `data:image/png;base64,${base64Data}`;
+                        document.getElementById('generated-image').src = imageUrl;
+                        document.getElementById('generated-image').classList.remove('hidden');
+                        imageStatus.classList.add('hidden');
+
+                    } else {
+                        throw new Error("No image data received.");
+                    }
+                } catch (e) {
+                    console.error('Error processing image response:', e);
+                    imageStatus.textContent = L10N[currentLang].creator_error;
+                    imageStatus.classList.add('bg-red-100');
+                }
+            } else {
+                imageStatus.textContent = L10N[currentLang].creator_error;
+                imageStatus.classList.add('bg-red-100');
+            }
+        };
+
         // Initialize on load
         window.onload = () => {
             switchLang(currentLang);
+            loadBaseImage(); // Load the base image asynchronously
             document.getElementById('ca-copy-button').addEventListener('click', copyCA);
+            document.getElementById('creator-button').addEventListener('click', generateImage);
         };
     </script>
 
@@ -247,7 +462,8 @@
                 <nav class="hidden md:flex space-x-6 lg:space-x-10">
                     <a href="#about" id="nav-about" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">About $TOFU</a>
                     <a href="#gallery" id="nav-gallery" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Meme Gallery</a>
-                    <a href="#tiktok" id="nav-tiktok" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">TikTok Video</a> <!-- NEW -->
+                    <a href="#tiktok" id="nav-tiktok" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">TikTok Video</a>
+                    <a href="#ai-creator" id="nav-creator" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">AI Editor</a> <!-- UPDATED NAV TEXT -->
                     <a href="#chart" id="nav-chart" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Live Chart</a>
                 </nav>
 
@@ -398,6 +614,55 @@
             </div>
         </section>
         <!-- End TikTok Video Section -->
+
+        <!-- AI Creator Section (UPDATED FOR IMAGE EDITING) -->
+        <section id="ai-creator" class="mt-16 pt-8">
+            <!-- UPDATED: Title to Editor -->
+            <h2 id="creator-title" class="text-center font-meme text-5xl text-yellow-700 mb-8 pb-4 border-b-4 border-yellow-500">
+                AI Frog Cat Editor
+            </h2>
+            <div class="bg-white card shadow-2xl p-6 space-y-6">
+                
+                <!-- Base Image Preview -->
+                <div class="text-center">
+                    <h3 class="font-bold text-xl mb-2 text-gray-700">Image to be Edited (Frog Cat Logo)</h3>
+                    <div id="base-image-status" class="text-sm text-blue-500 mb-2">Loading base image...</div>
+                    <img id="base-image-preview" 
+                         src="" 
+                         alt="Base Frog Cat Logo" 
+                         class="mx-auto h-24 w-24 rounded-full ring-4 ring-yellow-500 object-cover opacity-50 transition duration-500">
+                </div>
+
+                <!-- Input and Button -->
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input type="text" id="creator-prompt" 
+                           class="flex-grow p-4 border-2 border-gray-300 rounded-lg text-lg focus:ring-yellow-500 focus:border-yellow-500 font-inter"
+                           placeholder="Describe the modification (e.g., Add a gold crown and a royal robe)...">
+                           
+                    <button id="creator-button"
+                            class="flex-shrink-0 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-xl transition duration-300 transform hover:scale-[1.02] active:scale-95">
+                        Edit Frog Cat Image
+                    </button>
+                </div>
+
+                <!-- Image Display Area -->
+                <div id="generated-image-container" class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
+                    
+                    <!-- Loading/Status Message -->
+                    <div id="image-status" class="hidden absolute top-0 left-0 w-full h-full flex items-center justify-center text-center text-gray-700 font-semibold p-4 rounded-xl">
+                        <!-- Content updated by JS -->
+                    </div>
+
+                    <!-- Generated Image -->
+                    <img id="generated-image" 
+                         src="" 
+                         alt="Generated AI Frog Cat Meme" 
+                         class="w-full h-full object-cover rounded-xl hidden"
+                         style="max-width: 100%; max-height: 100%;">
+                </div>
+            </div>
+        </section>
+        <!-- End AI Creator Section -->
 
         <!-- Live Dexscreener Chart Section -->
         <section id="chart" class="mt-16 pt-8">
