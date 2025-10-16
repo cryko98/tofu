@@ -11,6 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <!-- Font Awesome for X.com icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzLQQkASO/st4Df+6p0yRkCFAg/uN9W6K6U5fC4J0Cg+H4tHlF7M/T9+xL6tA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- TikTok Embed Script -->
+    <script async src="https://www.tiktok.com/embed.js"></script>
+
     <style>
         /* Custom font setup for the playful look */
         .font-meme {
@@ -88,6 +92,7 @@
             en: {
                 nav_about: 'About $TOFU',
                 nav_gallery: 'Meme Gallery',
+                nav_tiktok: 'TikTok Video', // NEW
                 nav_chart: 'Live Chart',
                 header_ca: 'Contract Address',
                 ca_copied: 'CA Copied!',
@@ -98,12 +103,14 @@
                 about_p1: '$TOFU is the newest and fluffiest meme coin hopping onto the **BNB Chain**! Inspired by the viral sensation **蛙猫 (Frog Cat)**, a ridiculously cute cat that sits exactly like a frog, $TOFU captures the internet\'s love for unexpected cuteness and high-octane memetic energy.',
                 about_p2: 'Join the #FrogCat army and let\'s turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!',
                 gallery_title: 'The Glorious $TOFU Meme Gallery',
+                tiktok_title: 'Viral TikTok Video', // NEW
                 chart_title: '$TOFU Live Price Chart',
                 footer_text: '$TOFU - Built on the BNB Chain. Meme Safely.'
             },
             zh: {
                 nav_about: '关于 蛙猫',
                 nav_gallery: '表情包图库',
+                nav_tiktok: '抖音视频', // NEW
                 nav_chart: '实时图表',
                 header_ca: '合约地址',
                 ca_copied: '已复制!',
@@ -114,6 +121,7 @@
                 about_p1: '$TOFU 是最新、最可爱的迷因币，正在跳上 **BNB 链**！它的灵感来自于病毒式传播的 **蛙猫 (Frog Cat)**——一只坐姿与青蛙完全一样的可爱猫咪。$TOFU 抓住了互联网对意想不到的可爱和高能迷因能量的热爱。',
                 about_p2: '加入 #蛙猫 大军，让我们把这个可爱的迷因变成一场金融现象。未来是可爱、绿色，并且带着一丝豆腐的香气！',
                 gallery_title: '蛙猫 $TOFU 荣耀图库',
+                tiktok_title: '病毒式抖音视频', // NEW
                 chart_title: '蛙猫 实时价格图表',
                 footer_text: '$TOFU - 基于 BNB 链。安全迷因。'
             }
@@ -168,6 +176,7 @@
             // Update Navigation Links
             document.getElementById('nav-about').textContent = langData.nav_about;
             document.getElementById('nav-gallery').textContent = langData.nav_gallery;
+            document.getElementById('nav-tiktok').textContent = langData.nav_tiktok; // NEW
             document.getElementById('nav-chart').textContent = langData.nav_chart;
             
             // Update Header CA Text
@@ -183,8 +192,9 @@
             document.getElementById('about-p1').innerHTML = langData.about_p1.replace('**BNB Chain**', '<strong class="text-yellow-600">BNB Chain</strong>');
             document.getElementById('about-p2').textContent = langData.about_p2;
 
-            // Update Gallery and Chart
+            // Update Gallery, TikTok, and Chart
             document.getElementById('gallery-title').textContent = langData.gallery_title;
+            document.getElementById('tiktok-title').textContent = langData.tiktok_title; // NEW
             document.getElementById('chart-title').textContent = langData.chart_title;
 
             // Update Footer
@@ -237,6 +247,7 @@
                 <nav class="hidden md:flex space-x-6 lg:space-x-10">
                     <a href="#about" id="nav-about" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">About $TOFU</a>
                     <a href="#gallery" id="nav-gallery" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Meme Gallery</a>
+                    <a href="#tiktok" id="nav-tiktok" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">TikTok Video</a> <!-- NEW -->
                     <a href="#chart" id="nav-chart" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Live Chart</a>
                 </nav>
 
@@ -304,9 +315,9 @@
             </h2>
             <!-- Card container with overflow-hidden to handle image rounding at the top -->
             <div class="bg-white card shadow-xl overflow-hidden">
-                <!-- Banner Image: Fills the entire width of the card. -->
+                <!-- Banner Image: Fills the entire width of the card. (UPDATED SRC) -->
                 <img src="https://pbs.twimg.com/media/G3V2up6bIAAHcb0?format=jpg&name=large" 
-                     onerror="this.onerror=null;this.src='https://pbs.twimg.com/media/G3V2up6bIAAHcb0?format=jpg&name=large';" 
+                     onerror="this.onerror=null;this.src='https://pbs.twimg.com/media/G3VtfByXoAIG-nS?format=jpg&name=large';" 
                      alt="Conceptual Frog Cat Banner" 
                      class="w-full h-auto object-cover transition duration-500">
 
@@ -316,7 +327,7 @@
                         $TOFU is the newest and fluffiest meme coin hopping onto the **BNB Chain**! Inspired by the viral sensation **蛙猫 (Frog Cat)**, a ridiculously cute cat that sits exactly like a frog, $TOFU captures the internet's love for unexpected cuteness and high-octane memetic energy.
                     </p>
                     <p id="about-p2">
-                        Join the #FrogCat army and let's turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!
+                        Join the #FrogCat army and let\'s turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!
                     </p>
                 </div>
             </div>
@@ -367,6 +378,26 @@
                 </div>
             </div>
         </section>
+        
+        <!-- TikTok Video Section (NEW) -->
+        <section id="tiktok" class="mt-16 pt-8">
+            <h2 id="tiktok-title" class="text-center font-meme text-5xl text-yellow-700 mb-8 pb-4 border-b-4 border-yellow-500">
+                Viral TikTok Video
+            </h2>
+            <div class="bg-white card shadow-2xl p-6 flex justify-center">
+                <!-- TikTok Embed Code for the specified post -->
+                <blockquote class="tiktok-embed" 
+                    cite="https://www.tiktok.com/@tofucat44/photo/7560938631632817438" 
+                    data-video-id="7560938631632817438" 
+                    style="max-width: 605px; min-width: 325px; border-radius: 1rem; overflow: hidden;">
+                    <!-- Fallback content, replaced by the TikTok script when loaded -->
+                    <section class="text-center text-gray-500 p-4">
+                        Loading TikTok video... If it doesn't appear, please check your network connection or try a different browser.
+                    </section>
+                </blockquote>
+            </div>
+        </section>
+        <!-- End TikTok Video Section -->
 
         <!-- Live Dexscreener Chart Section -->
         <section id="chart" class="mt-16 pt-8">
