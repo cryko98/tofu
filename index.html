@@ -1,1 +1,400 @@
-$tofu
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蛙猫 ($TOFU) | Frog Cat Meme Coin</title>
+  <link rel="icon" type="image/png" href="https://pbs.twimg.com/media/G3VpmBoacAAGUB2?format=jpg&name=360x360">
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load a fun, meme-like Google Font (Bangers) -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for X.com icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzLQQkASO/st4Df+6p0yRkCFAg/uN9W6K6U5fC4J0Cg+H4tHlF7M/T9+xL6tA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Custom font setup for the playful look */
+        .font-meme {
+            font-family: 'Bangers', cursive;
+        }
+
+        /* Cheerful, vibrant background (UPDATED: Pink to Yellow) */
+        body {
+            background-color: #fffbe6; /* Light Yellow/Cream */
+            /* UPDATED: Removed purple from gradient to focus on yellow/blue */
+            background-image: linear-gradient(135deg, #fffbe6 0%, #ffc700 50%, #bae6fd 100%); /* Light Yellow to Bright Yellow to Blue Gradient */
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* General styles for rounding and shadows */
+        .card {
+            border-radius: 1.5rem; /* xl rounded */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Dexscreener iframe styling */
+        #dexscreener-embed{
+            position:relative;
+            width:100%;
+            padding-bottom:125%; /* Default for smaller screens */
+        }
+        @media(min-width:1400px){
+            #dexscreener-embed{
+                padding-bottom:65%; /* Taller on large screens */
+            }
+        }
+        #dexscreener-embed iframe{
+            position:absolute;
+            width:100%;
+            height:100%;
+            top:0;
+            left:0;
+            border:0;
+            border-radius: 1rem; /* Added to match card style */
+        }
+
+        /* Animation for the hero title */
+        @keyframes pulse-pop {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .animate-pulse-pop {
+            animation: pulse-pop 3s infinite ease-in-out;
+        }
+        
+        /* Language button hover effect */
+        .lang-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Image hover effect */
+        .gallery-img:hover {
+            transform: scale(1.05) rotate(2deg);
+            filter: brightness(1.1);
+        }
+
+    </style>
+</head>
+<body class="font-inter">
+
+    <!-- Global Localization Data -->
+    <script>
+        const CA = "0x2587ecce46afe23e436436d66baeac05948b4444";
+        const LANG_KEY = 'tofuLang';
+        
+        const L10N = {
+            en: {
+                nav_about: 'About $TOFU',
+                nav_gallery: 'Meme Gallery',
+                nav_chart: 'Live Chart',
+                header_ca: 'Contract Address',
+                ca_copied: 'CA Copied!',
+                // UPDATED HERO TEXT
+                hero_title: 'Welcome to the FrogCat community!',
+                hero_ticker: 'TOFU Conquers BNB after TikTok Domination',
+                about_title: 'What is Frog Cat ($TOFU)?',
+                about_p1: '$TOFU is the newest and fluffiest meme coin hopping onto the **BNB Chain**! Inspired by the viral sensation **蛙猫 (Frog Cat)**, a ridiculously cute cat that sits exactly like a frog, $TOFU captures the internet\'s love for unexpected cuteness and high-octane memetic energy.',
+                about_p2: 'Join the #FrogCat army and let\'s turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!',
+                gallery_title: 'The Glorious $TOFU Meme Gallery',
+                chart_title: '$TOFU Live Price Chart',
+                footer_text: '$TOFU - Built on the BNB Chain. Meme Safely.'
+            },
+            zh: {
+                nav_about: '关于 蛙猫',
+                nav_gallery: '表情包图库',
+                nav_chart: '实时图表',
+                header_ca: '合约地址',
+                ca_copied: '已复制!',
+                // UPDATED HERO TEXT (Mandarin)
+                hero_title: '欢迎来到 蛙猫 🐸🐱 社区!',
+                hero_ticker: '继 TikTok 之后，TOFU 征服 BNB 链',
+                about_title: '什么是 蛙猫 ($TOFU)?',
+                about_p1: '$TOFU 是最新、最可爱的迷因币，正在跳上 **BNB 链**！它的灵感来自于病毒式传播的 **蛙猫 (Frog Cat)**——一只坐姿与青蛙完全一样的可爱猫咪。$TOFU 抓住了互联网对意想不到的可爱和高能迷因能量的热爱。',
+                about_p2: '加入 #蛙猫 大军，让我们把这个可爱的迷因变成一场金融现象。未来是可爱、绿色，并且带着一丝豆腐的香气！',
+                gallery_title: '蛙猫 $TOFU 荣耀图库',
+                chart_title: '蛙猫 实时价格图表',
+                footer_text: '$TOFU - 基于 BNB 链。安全迷因。'
+            }
+        };
+
+        let currentLang = localStorage.getItem(LANG_KEY) || 'en';
+        
+        /**
+         * Copies the contract address to the clipboard.
+         */
+        const copyCA = async () => {
+            const caText = document.getElementById('ca-text').textContent;
+            try {
+                // Use the safer method first, falling back to execCommand
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(CA);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = CA;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                }
+                
+                // Show confirmation message
+                const caButton = document.getElementById('ca-copy-button');
+                const originalText = caButton.innerHTML;
+                caButton.classList.remove('bg-yellow-400');
+                caButton.classList.add('bg-green-500');
+                caButton.textContent = L10N[currentLang].ca_copied;
+
+                setTimeout(() => {
+                    caButton.textContent = caText;
+                    caButton.classList.remove('bg-green-500');
+                    caButton.classList.add('bg-yellow-400');
+                    caButton.innerHTML = originalText;
+                }, 1500);
+
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+                // Optionally show a failure message
+            }
+        };
+
+        /**
+         * Updates all text elements based on the current language.
+         */
+        const updateText = () => {
+            const langData = L10N[currentLang];
+            
+            // Update Navigation Links
+            document.getElementById('nav-about').textContent = langData.nav_about;
+            document.getElementById('nav-gallery').textContent = langData.nav_gallery;
+            document.getElementById('nav-chart').textContent = langData.nav_chart;
+            
+            // Update Header CA Text
+            document.getElementById('ca-label').textContent = langData.header_ca + ':';
+            
+            // Update Hero Section
+            document.getElementById('hero-title').textContent = langData.hero_title;
+            document.getElementById('hero-ticker').textContent = langData.hero_ticker;
+
+            // Update About Section
+            document.getElementById('about-title').textContent = langData.about_title;
+            // UPDATED: Changed text-pink-600 to text-yellow-600
+            document.getElementById('about-p1').innerHTML = langData.about_p1.replace('**BNB Chain**', '<strong class="text-yellow-600">BNB Chain</strong>');
+            document.getElementById('about-p2').textContent = langData.about_p2;
+
+            // Update Gallery and Chart
+            document.getElementById('gallery-title').textContent = langData.gallery_title;
+            document.getElementById('chart-title').textContent = langData.chart_title;
+
+            // Update Footer
+            document.getElementById('footer-text').textContent = langData.footer_text;
+
+            // Update button text if it was showing 'CA Copied!'
+            const caButton = document.getElementById('ca-copy-button');
+             if (!caButton.classList.contains('bg-green-500')) {
+                caButton.innerHTML = `<span id="ca-text" class="text-sm font-semibold">${CA.substring(0, 6)}...${CA.slice(-4)}</span>`;
+            }
+        };
+
+        /**
+         * Switches the language and updates the UI.
+         */
+        const switchLang = (lang) => {
+            currentLang = lang;
+            localStorage.setItem(LANG_KEY, lang);
+            document.documentElement.lang = lang; // Set HTML lang attribute
+            updateText();
+            // UPDATED: Changed pink-600 to yellow-600 in JS logic
+            document.querySelectorAll('.lang-button').forEach(btn => {
+                btn.classList.remove('bg-yellow-600', 'text-white', 'shadow-lg');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            document.getElementById('lang-' + lang).classList.add('bg-yellow-600', 'text-white', 'shadow-lg');
+            document.getElementById('lang-' + lang).classList.remove('bg-gray-200', 'text-gray-700');
+        };
+
+        // Initialize on load
+        window.onload = () => {
+            switchLang(currentLang);
+            document.getElementById('ca-copy-button').addEventListener('click', copyCA);
+        };
+    </script>
+
+
+    <!-- Header / Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-xl border-b-4 border-yellow-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo and Title -->
+                <div class="flex items-center space-x-3">
+                    <img src="https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/60x60/8b5cf6/ffffff?text=$TOFU';" alt="Frog Cat Logo" class="h-12 w-12 rounded-full ring-4 ring-yellow-500 shadow-xl">
+                    <!-- UPDATED: Title text color from text-purple-600 to text-yellow-700 -->
+                    <span class="font-meme text-3xl text-yellow-700 tracking-wider hidden sm:block">蛙猫 $TOFU</span>
+                </div>
+
+                <!-- Navigation Links (Center) -->
+                <nav class="hidden md:flex space-x-6 lg:space-x-10">
+                    <a href="#about" id="nav-about" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">About $TOFU</a>
+                    <a href="#gallery" id="nav-gallery" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Meme Gallery</a>
+                    <a href="#chart" id="nav-chart" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Live Chart</a>
+                </nav>
+
+                <!-- CA, X.com, TikTok, and Language Selector (Right) -->
+                <div class="flex items-center space-x-4">
+                    <!-- Language Selector -->
+                    <div class="flex items-center space-x-1 p-1 bg-gray-100 rounded-full shadow-inner">
+                        <!-- UPDATED: Initial active color to yellow-600 -->
+                        <button id="lang-en" onclick="switchLang('en')" class="lang-button text-xs py-1 px-2 rounded-full font-bold transition duration-200 bg-yellow-600 text-white shadow-lg">EN</button>
+                        <button id="lang-zh" onclick="switchLang('zh')" class="lang-button text-xs py-1 px-2 rounded-full font-bold transition duration-200 bg-gray-200 text-gray-700">中</button>
+                    </div>
+
+                    <!-- X.com Link -->
+                    <a href="https://x.com/frogcatbnb?s=21" target="_blank" class="text-gray-700 hover:text-blue-500 transition duration-300 flex items-center">
+                        <i class="fab fa-x-twitter text-2xl"></i>
+                    </a>
+                    
+                    <!-- TikTok Link (UPDATED SIZE: w-7 h-7) -->
+                    <a href="https://www.tiktok.com/@tofucat44/photo/7560938631632817438" target="_blank" class="hover:opacity-75 transition duration-300 flex items-center">
+                        <img src="https://static.vecteezy.com/system/resources/previews/018/930/574/non_2x/tiktok-logo-tikok-icon-transparent-tikok-app-logo-free-png.png" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/28x28/000000/ffffff?text=TK';" 
+                             alt="TikTok Logo" 
+                             class="w-7 h-7">
+                    </a>
+
+                    <!-- CA Button -->
+                    <div class="hidden lg:block">
+                        <span id="ca-label" class="text-sm font-medium text-gray-500 hidden xl:inline">Contract Address:</span>
+                        <button id="ca-copy-button" class="flex items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 rounded-full font-bold transition duration-300 shadow-md transform hover:scale-[1.02]">
+                            <span id="ca-text" class="text-sm font-semibold">0x2587...b4444</span>
+                            <i class="fa-solid fa-copy text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- Hero / Banner Section -->
+        <section class="text-center py-16 sm:py-24 bg-white card shadow-2xl mt-8 transform hover:shadow-yellow-400/50 transition duration-500">
+            <img src="https://pbs.twimg.com/media/G3VrL-hbEAA7YOR?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/150x150/8b5cf6/ffffff?text=$TOFU';" alt="Frog Cat Hero Image" class="h-40 w-40 mx-auto rounded-full ring-8 ring-yellow-500 mb-6 shadow-2xl animate-spin-slow">
+            
+            <!-- UPDATED: Hero Title text color from text-purple-700 to text-yellow-800 -->
+            <h1 id="hero-title" class="font-meme text-6xl sm:text-7xl lg:text-8xl text-yellow-800 leading-tight mb-2 animate-pulse-pop">
+                Welcome to the FrogCat community!
+            </h1>
+            <p id="hero-ticker" class="font-inter text-xl sm:text-2xl text-gray-700 font-semibold mt-4">
+                TOFU Conquers BNB after TikTok Domination
+            </p>
+            <div class="mt-8">
+                 <!-- UPDATED: Pink to Yellow classes -->
+                 <a href="#chart" class="inline-block bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-xl transition duration-300 transform hover:scale-110 ring-4 ring-yellow-300">
+                    Buy $TOFU Now!
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="mt-16 pt-8">
+            <!-- UPDATED: Section Title text color from text-purple-600 to text-yellow-700 -->
+            <h2 id="about-title" class="text-center font-meme text-5xl text-yellow-700 mb-8 pb-4 border-b-4 border-yellow-500">
+                What is Frog Cat ($TOFU)?
+            </h2>
+            <!-- Card container with overflow-hidden to handle image rounding at the top -->
+            <div class="bg-white card shadow-xl overflow-hidden">
+                <!-- Banner Image: Fills the entire width of the card. -->
+                <img src="https://pbs.twimg.com/media/G3VtfByXoAIG-nS?format=jpg&name=large" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/1200x400/bae6fd/27272a?text=FROG+CAT+BANNER+PLACEHOLDER';" 
+                     alt="Conceptual Frog Cat Banner" 
+                     class="w-full h-auto object-cover transition duration-500">
+
+                <!-- Text block: Apply padding to the text container below the image -->
+                <div class="p-8 space-y-4 text-lg font-medium">
+                    <p id="about-p1">
+                        $TOFU is the newest and fluffiest meme coin hopping onto the **BNB Chain**! Inspired by the viral sensation **蛙猫 (Frog Cat)**, a ridiculously cute cat that sits exactly like a frog, $TOFU captures the internet's love for unexpected cuteness and high-octane memetic energy.
+                    </p>
+                    <p id="about-p2">
+                        Join the #FrogCat army and let's turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meme Gallery Section -->
+        <section id="gallery" class="mt-16 pt-8">
+            <!-- UPDATED: Section Title text color from text-purple-600 to text-yellow-700 -->
+            <h2 id="gallery-title" class="text-center font-meme text-5xl text-yellow-700 mb-8 pb-4 border-b-4 border-yellow-500">
+                The Glorious $TOFU Meme Gallery
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Image 1: Added aspect-square wrapper for 1:1 ratio and h-full on image for centering/cover -->
+                <div class="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition duration-300 bg-white">
+                    <div class="w-full aspect-square">
+                        <img src="https://pbs.twimg.com/media/G3Vx3oqbQAAmR1_?format=jpg&name=240x240" onerror="this.onerror=null;this.src='https://placehold.co/240x240/fffbe6/27272a?text=Meme+1';" alt="Frog Cat Meme 1" class="w-full h-full rounded-xl gallery-img transition duration-500 object-cover">
+                    </div>
+                </div>
+                <!-- Image 2: Added aspect-square wrapper for 1:1 ratio and h-full on image for centering/cover -->
+                <div class="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition duration-300 bg-white">
+                    <div class="w-full aspect-square">
+                        <img src="https://pbs.twimg.com/media/G3Vv4gybgAA1vL9?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/240x240/d8b4fe/27272a?text=Meme+2';" alt="Frog Cat Meme 2" class="w-full h-full rounded-xl gallery-img transition duration-500 object-cover">
+                    </div>
+                </div>
+                <!-- Image 3: Added aspect-square wrapper for 1:1 ratio and h-full on image for centering/cover -->
+                <div class="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition duration-300 bg-white">
+                    <div class="w-full aspect-square">
+                        <img src="https://pbs.twimg.com/media/G3VvywhW0AABcQY?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/240x240/bae6fd/27272a?text=Meme+3';" alt="Frog Cat Meme 3" class="w-full h-full rounded-xl gallery-img transition duration-500 object-cover">
+                    </div>
+                </div>
+                <!-- Image 4: Added aspect-square wrapper for 1:1 ratio and h-full on image for centering/cover -->
+                <div class="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition duration-300 bg-white">
+                    <div class="w-full aspect-square">
+                        <img src="https://pbs.twimg.com/media/G3VvgZZXcAA68ND?format=jpg&name=360x360" onerror="this.onerror=null;this.src='https://placehold.co/240x240/8b5cf6/ffffff?text=Meme+4';" alt="Frog Cat Meme 4" class="w-full h-full rounded-xl gallery-img transition duration-500 object-cover">
+                    </div>
+                </div>
+                <!-- Image 5: Added aspect-square wrapper for 1:1 ratio and h-full on image for centering/cover -->
+                <div class="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition duration-300 bg-white">
+                    <div class="w-full aspect-square">
+                        <img src="https://pbs.twimg.com/media/G3Vobz4WIAADIK_?format=jpg&name=240x240" onerror="this.onerror=null;this.src='https://placehold.co/240x240/ec4899/ffffff?text=Meme+5';" alt="Frog Cat Meme 5" class="w-full h-full rounded-xl gallery-img transition duration-500 object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Dexscreener Chart Section -->
+        <section id="chart" class="mt-16 pt-8">
+            <!-- UPDATED: Section Title text color from text-purple-600 to text-yellow-700 -->
+            <h2 id="chart-title" class="text-center font-meme text-5xl text-yellow-700 mb-8 pb-4 border-b-4 border-yellow-500">
+                $TOFU Live Price Chart
+            </h2>
+            <div class="bg-white card shadow-2xl overflow-hidden">
+                <!-- Dexscreener Iframe Embed -->
+                <div id="dexscreener-embed">
+                    <iframe 
+                        src="https://dexscreener.com/bsc/0x2587ecce46afe23e436436d66baeac05948b4444?embed=1&loadChartSettings=0&chartLeftToolbar=0&chartTheme=dark&theme=light&chartStyle=0&chartType=usd&interval=15"
+                        allow="clipboard-write">
+                    </iframe>
+                </div>
+            </div>
+             <p class="text-center text-sm text-gray-600 mt-4">
+                Chart data provided by Dexscreener.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <!-- UPDATED: Footer background color from bg-purple-700 to bg-yellow-700 -->
+    <footer class="mt-16 bg-yellow-700 text-white p-6 shadow-inner">
+        <div class="max-w-7xl mx-auto text-center">
+            <p id="footer-text" class="text-sm">
+                $TOFU - Built on the BNB Chain. Meme Safely.
+            </p>
+            <p class="text-xs mt-2 opacity-80">
+                CA: 0x2587ecce46afe23e436436d66baeac05948b4444
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
