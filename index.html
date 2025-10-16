@@ -203,6 +203,8 @@
                     throw new Error("Invalid or placeholder URL for Base64 conversion.");
                 }
 
+                // IMPORTANT: Since fetching a relative path via JS can fail, 
+                // we assume the IMG tag resolves it correctly and use the resolved URL.
                 const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -239,8 +241,6 @@
         
         /**
          * Loads the base image (logo) into the global variable and updates the UI.
-         * FIX: Uses the resolved absolute URL from the DOM element's 'src' property 
-         * instead of the relative path constant to avoid 'Failed to parse URL' error.
          */
         const loadBaseImage = async () => {
             const baseImageStatus = document.getElementById('base-image-status');
@@ -248,13 +248,13 @@
 
             baseImageStatus.textContent = L10N[currentLang].creator_base_loading;
             
-            // Wait until the image element itself has resolved the URL.
-            // This ensures we get a full, absolute URL (e.g., blob:https://...)
+            // Get the resolved absolute URL from the DOM element's 'src' property
             const resolvedUrl = baseImagePreview.src;
 
             // Only proceed if the URL looks resolved and is not the placeholder or empty
             if (resolvedUrl && !resolvedUrl.includes('placehold.co')) {
-                const result = await urlToBase64(resolvedUrl); // Use resolved URL here!
+                // Give the browser a moment to fully load the image before fetching its contents
+                const result = await urlToBase64(resolvedUrl); 
                 BASE_IMAGE_B64 = result;
             }
 
@@ -360,9 +360,9 @@
             const imageStatus = document.getElementById('image-status');
             const generateButton = document.getElementById('creator-button');
             const apiKey = ""; // Canvas handles API key injection
-
+            
+            // --- Input Validation ---
             if (!prompt) {
-                // IMPORTANT: Use custom UI instead of alert()
                 imageStatus.classList.remove('hidden', 'bg-blue-100');
                 imageStatus.classList.add('bg-red-100');
                 imageStatus.textContent = "Please enter a description for your Frog Cat meme edit!";
@@ -389,31 +389,24 @@
             document.getElementById('generated-image').classList.add('hidden');
 
 
-            // Use gemini-2.5-flash-image-preview for image-to-image editing
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            // 2. Prepare API Call (Switched to Imagen 3.0 Predict Endpoint for better stability)
+            // Model: imagen-3.0-generate-002 (used via the predict endpoint for image editing)
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
             
-            // We use the prompt directly as the text part, as the base image is the other part.
-            // The model is instructed to modify the image based on the text.
-            const userPrompt = prompt;
-
+            // The prompt structure for Imagen 3.0 image editing via predict endpoint
             const payload = {
-                contents: [
-                    {
-                        role: "user",
-                        parts: [
-                            { text: userPrompt }, // The modification prompt
-                            {
-                                inlineData: {
-                                    mimeType: BASE_IMAGE_B64.mimeType,
-                                    data: BASE_IMAGE_B64.base64
-                                }
-                            } // The base image to be edited
-                        ]
+                instances: {
+                    // Combine base prompt with edit request to tell Imagen what to edit
+                    prompt: `Edit the provided image of the Frog Cat logo: ${prompt}.`, 
+                    image: {
+                        bytesBase64Encoded: BASE_IMAGE_B64.base64
                     }
-                ],
-                // Requesting an image output
-                generationConfig: {
-                    responseModalities: ["IMAGE"]
+                },
+                parameters: {
+                    sampleCount: 1, // Request only one image
+                    aspectRatio: "1:1", // Keep the logo square
+                    // Use a slightly lower guidance scale for subtle edits on a base image
+                    guidanceScale: 15 
                 }
             };
 
@@ -444,7 +437,7 @@
                 }
             }
 
-            // 2. Process Result
+            // 3. Process Result
             generateButton.disabled = false;
             generateButton.classList.remove('bg-gray-400');
             generateButton.classList.add('bg-yellow-600');
@@ -454,10 +447,11 @@
                 try {
                     const result = await response.json();
                     
-                    // Parsing response for gemini-2.5-flash-image-preview (generateContent)
-                    const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                    // Parsing response for Imagen 3.0 (predict endpoint)
+                    const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
 
                     if (base64Data) {
+                        // Image URL setup
                         const imageUrl = `data:image/png;base64,${base64Data}`;
                         document.getElementById('generated-image').src = imageUrl;
                         document.getElementById('generated-image').classList.remove('hidden');
@@ -465,6 +459,7 @@
 
                     } else {
                         // Throw error if JSON structure is valid but no image data is present
+                        console.error('API Response Missing Data:', result);
                         throw new Error("No image data received in valid response.");
                     }
                 } catch (e) {
@@ -473,7 +468,7 @@
                     imageStatus.classList.add('bg-red-100');
                 }
             } else {
-                imageStatus.textContent = L10N[currentLang].creator_error;
+                imageStatus.textContent = L10N[currentLang].creator_error + " (API Error: 403 or Timeout)";
                 imageStatus.classList.add('bg-red-100');
             }
         };
