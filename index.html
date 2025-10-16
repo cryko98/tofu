@@ -10,7 +10,7 @@
     <!-- Load a fun, meme-like Google Font (Bangers) -->
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <!-- Font Awesome for X.com icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzLQQkASO/st4Df+6p0yRkCFAg/uNN9W6K6U5fC4J0Cg+H4tHlF7M/T9+xL6tA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMDJzLQQkASO/st4Df+6p0yRkCFAg/uNN9W6K6U5fC4J0Cg/uNN9W6K6U5fC4J0Cg+H4tHlF7M/T9+xL6tA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <!-- TikTok Embed Script -->
     <script async src="https://www.tiktok.com/embed.js"></script>
@@ -25,7 +25,7 @@
         body {
             background-color: #fffbe6; /* Light Yellow/Cream */
             /* UPDATED: Removed purple from gradient to focus on yellow/blue */
-            background-image: linear-gradient(135deg, #fffbe6 0%, #ffc700 50%, #bae6fd 100%); /* Light Yellow to Bright Yellow to Blue Gradient */
+            background-image: linear-image_f2ad21.png(135deg, #fffbe6 0%, #ffc700 50%, #bae6fd 100%); /* Light Yellow to Bright Yellow to Blue Gradient */
             min-height: 100vh;
             color: #333;
         }
@@ -79,6 +79,19 @@
             filter: brightness(1.1);
         }
 
+        /* Specific styles for the AI creator section */
+        #generated-image {
+            min-height: 300px;
+            background-color: #fef3c7; /* Light yellow background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #fcd34d;
+        }
+        .ai-status {
+            color: #f97316; /* Orange text for status */
+        }
+
     </style>
 </head>
 <body class="font-inter">
@@ -87,17 +100,16 @@
     <script>
         const CA = "0x2587ECCe46afE23E436436d66baEAc05948b4444"; 
         const LANG_KEY = 'tofuLang';
-        // UPDATED: Using local file name for the logo image
         const LOGO_URL = "./tofu.jpg"; 
-        let BASE_IMAGE_B64 = null; // Stores { base64: string, mimeType: string }
         
+        let BASE_IMAGE_B64 = null; // Stores { base64: string, mimeType: string }
 
         const L10N = {
             en: {
                 nav_about: 'About $TOFU',
                 nav_gallery: 'Meme Gallery',
                 nav_tiktok: 'TikTok Video',
-                nav_creator: 'AI Editor', 
+                nav_creator: 'AI Creator',
                 nav_chart: 'Live Chart',
                 header_ca: 'Contract Address',
                 ca_copied: 'CA Copied!',
@@ -108,14 +120,13 @@
                 about_p2: 'Join the #FrogCat army and let\'s turn this adorable meme into a financial phenomenon. The future is cute, green, and smells slightly of tofu!',
                 gallery_title: 'The Glorious $TOFU Meme Gallery',
                 tiktok_title: 'Viral TikTok Video',
-                creator_title: 'AI Frog Cat Editor', 
-                creator_base_loading: 'Loading base image...',
-                creator_base_ready: 'Base image ready for editing.',
-                creator_base_error: 'Error loading base image. (CORS/Network)',
-                creator_prompt_placeholder: 'Describe the modification (e.g., Add a gold crown and a royal robe)...', 
-                creator_button: 'Edit Frog Cat Image', 
-                creator_loading: 'Generating image, please wait...', 
-                creator_error: 'Image generation failed. Please try again.', 
+                creator_title: 'AI Frog Cat Editor (Experimental)',
+                creator_subtitle: 'Edit the $TOFU logo with a text prompt!',
+                creator_prompt_placeholder: 'Describe the modification (e.g., Add a golden crown and a royal robe)...',
+                creator_button: 'Edit Frog Cat Image',
+                creator_loading: 'Generating edited image...',
+                creator_error: 'Image generation failed. (API/Permission error)',
+                creator_ready: 'Base image ready for editing.',
                 chart_title: '$TOFU Live Price Chart',
                 footer_text: '$TOFU - Built on the BNB Chain. Meme Safely.'
             },
@@ -123,7 +134,7 @@
                 nav_about: '关于 蛙猫',
                 nav_gallery: '表情包图库',
                 nav_tiktok: '抖音视频',
-                nav_creator: 'AI 编辑器', 
+                nav_creator: 'AI 编辑器',
                 nav_chart: '实时图表',
                 header_ca: '合约地址',
                 ca_copied: '已复制!',
@@ -134,14 +145,13 @@
                 about_p2: '加入 #蛙猫 大军，让我们把这个可爱的迷因变成一场金融现象。未来是可爱、绿色，并且带着一丝豆腐的香气！',
                 gallery_title: '蛙猫 $TOFU 荣耀图库',
                 tiktok_title: '病毒式抖音视频',
-                creator_title: 'AI 蛙猫编辑器', 
-                creator_base_loading: '正在加载基础图像...',
-                creator_base_ready: '基础图像已准备好编辑。',
-                creator_base_error: '加载基础图像失败。（跨域/网络）',
-                creator_prompt_placeholder: '描述修改内容（例如：添加金色皇冠和皇家长袍）...', 
-                creator_button: '编辑蛙猫图像', 
-                creator_loading: '正在生成图像，请稍候...', 
-                creator_error: '图像生成失败，请重试。', 
+                creator_title: 'AI 蛙猫编辑器 (实验性)',
+                creator_subtitle: '使用文字提示编辑 $TOFU 标志！',
+                creator_prompt_placeholder: '描述修改内容（例如：添加金色皇冠和皇家长袍）...',
+                creator_button: '编辑蛙猫图像',
+                creator_loading: '正在生成编辑图像...',
+                creator_error: '图像生成失败。（API/权限错误）',
+                creator_ready: '基础图像已准备好进行编辑。',
                 chart_title: '蛙猫 实时价格图表',
                 footer_text: '$TOFU - 基于 BNB 链。安全迷因。'
             }
@@ -151,7 +161,6 @@
         
         /**
          * Copies the contract address to the clipboard.
-         * FIX: Switched to document.execCommand('copy') exclusively for reliable iframe clipboard access.
          */
         const copyCA = async () => {
             const caText = document.getElementById('ca-text').textContent;
@@ -194,85 +203,165 @@
         };
 
         /**
-         * Converts a URL image to a Base64 string for API use.
+         * Converts a remote or local image URL to a Base64 object suitable for the Gemini API.
+         * FIX: Uses the resolved SRC from the image element for robust URL fetching.
          */
-        async function urlToBase64(url) {
-            try {
-                // Check if the URL is valid before fetching
-                if (!url || url.startsWith('data:') || url.includes('placehold.co')) {
-                    throw new Error("Invalid or placeholder URL for Base64 conversion.");
-                }
-
-                // IMPORTANT: Since fetching a relative path via JS can fail, 
-                // we assume the IMG tag resolves it correctly and use the resolved URL.
-                const response = await fetch(url);
+        const urlToBase64 = async (imgSrc) => {
+             try {
+                // Fetch the image data using the browser-resolved absolute URL
+                const response = await fetch(imgSrc);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const blob = await response.blob();
                 
-                // Use FileReader to get the Base64 data
+                // Convert blob to Base64
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onloadend = () => {
-                        if (!reader.result) {
-                            return reject(new Error("FileReader result is null."));
-                        }
-                        const dataUrl = reader.result;
-                        const [mimeTypePart, base64] = dataUrl.split(';base64,');
-                        const mimeType = mimeTypePart.split(':')[1];
-                        
-                        // Ensure we have both parts
-                        if (!base64 || !mimeType) {
-                            return reject(new Error("Failed to parse data URL into Base64 and MIME type."));
-                        }
-                        
-                        resolve({ base64, mimeType });
+                        const base64Data = reader.result.split(',')[1];
+                        const mimeType = blob.type;
+                        resolve({ base64: base64Data, mimeType: mimeType });
                     };
                     reader.onerror = reject;
                     reader.readAsDataURL(blob);
                 });
+
             } catch (error) {
-                console.error("Failed to fetch or convert image to Base64 (CORS/Network Issue):", error);
-                // Return null on failure to indicate the base image is not ready
-                return null; 
-            }
-        }
-        
-        /**
-         * Loads the base image (logo) into the global variable and updates the UI.
-         */
-        const loadBaseImage = async () => {
-            const baseImageStatus = document.getElementById('base-image-status');
-            const baseImagePreview = document.getElementById('base-image-preview');
-
-            baseImageStatus.textContent = L10N[currentLang].creator_base_loading;
-            
-            // Get the resolved absolute URL from the DOM element's 'src' property
-            const resolvedUrl = baseImagePreview.src;
-
-            // Only proceed if the URL looks resolved and is not the placeholder or empty
-            if (resolvedUrl && !resolvedUrl.includes('placehold.co')) {
-                // Give the browser a moment to fully load the image before fetching its contents
-                const result = await urlToBase64(resolvedUrl); 
-                BASE_IMAGE_B64 = result;
-            }
-
-
-            if (BASE_IMAGE_B64) {
-                baseImageStatus.textContent = L10N[currentLang].creator_base_ready;
-                baseImageStatus.classList.remove('text-blue-500', 'text-red-500');
-                baseImageStatus.classList.add('text-green-500');
-                baseImagePreview.classList.remove('opacity-50');
-            } else {
-                // Show specific error for Base image failure
-                baseImageStatus.textContent = L10N[currentLang].creator_base_error;
-                baseImageStatus.classList.remove('text-blue-500', 'text-green-500');
-                baseImageStatus.classList.add('text-red-500');
+                console.error('Failed to fetch or convert image to Base64 (CORS/Network Issue):', error);
+                throw new Error("Failed to load base image.");
             }
         };
 
 
+        /**
+         * Handles the image generation/editing API call to Gemini-2.5-Flash.
+         */
+        const generateImage = async () => {
+            const promptInput = document.getElementById('prompt-input');
+            const generatedImageDiv = document.getElementById('generated-image');
+            const generateButton = document.getElementById('generate-button');
+            const userPrompt = promptInput.value.trim();
+
+            if (!userPrompt) {
+                promptInput.focus();
+                return;
+            }
+            if (!BASE_IMAGE_B64) {
+                 generatedImageDiv.innerHTML = `<p class="ai-status">${L10N[currentLang].creator_error} (Base image not loaded)</p>`;
+                return;
+            }
+
+
+            // 1. Show Loading State
+            generateButton.disabled = true;
+            generateButton.classList.add('opacity-50');
+            generatedImageDiv.innerHTML = `<div class="flex flex-col items-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-yellow-600 mb-4"></i>
+                <p class="ai-status font-semibold">${L10N[currentLang].creator_loading}</p>
+            </div>`;
+
+
+            const apiKey = ""; // Canvas will inject the key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            // System instruction for image editing tasks
+            const systemInstruction = "You are an expert image editor. Given the following base image of a 'Frog Cat' logo and a user prompt, digitally edit the image according to the user's description. The output MUST be a modified image.";
+
+            // Construct the payload with the base image and the prompt
+            const payload = {
+                contents: [
+                    {
+                        role: "user",
+                        parts: [
+                            // Main prompt: Ask the model to edit the image
+                            { text: `Edit this 'Frog Cat' logo image based ONLY on the following instruction: ${userPrompt}. Return only the edited image.` },
+                            // Base image data
+                            {
+                                inlineData: {
+                                    mimeType: BASE_IMAGE_B64.mimeType,
+                                    data: BASE_IMAGE_B64.base64
+                                }
+                            }
+                        ]
+                    }
+                ],
+                systemInstruction: {
+                    parts: [{ text: systemInstruction }]
+                },
+                // Request multimodal response (edited image)
+                generationConfig: {
+                    responseModalities: ["IMAGE"]
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned non-OK status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Extract base64 image data from the response
+                const base64Data = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+
+                if (base64Data) {
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    generatedImageDiv.innerHTML = `<img src="${imageUrl}" alt="Generated Frog Cat Image" class="rounded-xl shadow-2xl max-h-[500px] w-auto h-full object-contain">`;
+                } else {
+                    // Handle text-only or unexpected response (often means the model failed to generate an image)
+                     generatedImageDiv.innerHTML = `<p class="ai-status font-semibold">
+                        ${L10N[currentLang].creator_error} (Gemini might have returned text instead of image. Try a simpler prompt.)
+                    </p>`;
+                }
+            } catch (error) {
+                console.error('Image Generation API Error:', error);
+                // Display error to the user
+                generatedImageDiv.innerHTML = `<p class="ai-status font-semibold">${L10N[currentLang].creator_error} (Check console for 403 error)</p>`;
+            } finally {
+                // 3. Restore Button State
+                generateButton.disabled = false;
+                generateButton.classList.remove('opacity-50');
+            }
+        };
+
+        /**
+         * Loads the base image for editing and sets up the UI.
+         */
+        const loadBaseImage = async () => {
+            const statusDiv = document.getElementById('base-image-status');
+            const baseImagePreview = document.getElementById('base-image-preview');
+            
+            try {
+                baseImagePreview.src = LOGO_URL;
+                statusDiv.textContent = 'Loading...';
+                
+                // Get the browser-resolved absolute URL from the img element
+                await new Promise(resolve => setTimeout(resolve, 100)); // Small delay to ensure browser loads src
+                const resolvedUrl = baseImagePreview.src;
+                
+                const base64Obj = await urlToBase64(resolvedUrl);
+                BASE_IMAGE_B64 = base64Obj;
+                
+                statusDiv.classList.remove('text-red-500');
+                statusDiv.classList.add('text-green-500');
+                statusDiv.textContent = L10N[currentLang].creator_ready;
+
+            } catch (error) {
+                console.error('Failed to load base image for editor:', error);
+                statusDiv.classList.remove('text-green-500');
+                statusDiv.classList.add('text-red-500');
+                statusDiv.textContent = L10N[currentLang].creator_error + " (Base Image Load)";
+            }
+        };
+
+        
         /**
          * Updates all text elements based on the current language.
          */
@@ -301,11 +390,15 @@
             // Update Gallery, TikTok, and Chart
             document.getElementById('gallery-title').textContent = langData.gallery_title;
             document.getElementById('tiktok-title').textContent = langData.tiktok_title;
-            
-            // Update Creator
+
+            // Update Creator Section
             document.getElementById('creator-title').textContent = langData.creator_title;
-            document.getElementById('creator-prompt').placeholder = langData.creator_prompt_placeholder;
-            document.getElementById('creator-button').textContent = langData.creator_button;
+            document.getElementById('creator-subtitle').textContent = langData.creator_subtitle;
+            document.getElementById('prompt-input').placeholder = langData.creator_prompt_placeholder;
+            document.getElementById('generate-button').textContent = langData.creator_button;
+            document.getElementById('generated-image').innerHTML = `<p class="ai-status">${BASE_IMAGE_B64 ? langData.creator_ready : langData.creator_error + " (Base Image Load)"}</p>`; // Update status immediately
+            // Note: The loading status text is updated within loadBaseImage, which is called on window load.
+            
 
             document.getElementById('chart-title').textContent = langData.chart_title;
 
@@ -317,22 +410,6 @@
              if (!caButton.classList.contains('bg-green-500')) {
                 // Display the new CA in a shortened form
                 caButton.innerHTML = `<span id="ca-text" class="text-sm font-semibold">${CA.substring(0, 6)}...${CA.slice(-4)}</span>`;
-            }
-
-            // Update loading/error messages if visible
-            const imageStatus = document.getElementById('image-status');
-            if (imageStatus.classList.contains('bg-blue-100')) {
-                imageStatus.textContent = langData.creator_loading;
-            } else if (imageStatus.classList.contains('bg-red-100')) {
-                 imageStatus.textContent = langData.creator_error;
-            }
-
-            // Update base image status text
-            const baseImageStatus = document.getElementById('base-image-status');
-            if (baseImageStatus && !BASE_IMAGE_B64) {
-                 baseImageStatus.textContent = langData.creator_base_loading;
-            } else if (baseImageStatus && BASE_IMAGE_B64) {
-                 baseImageStatus.textContent = langData.creator_base_ready;
             }
         };
 
@@ -353,136 +430,12 @@
             document.getElementById('lang-' + lang).classList.remove('bg-gray-200', 'text-gray-700');
         };
 
-        // --- AI IMAGE GENERATION LOGIC ---
-
-        const generateImage = async () => {
-            const prompt = document.getElementById('creator-prompt').value.trim();
-            const imageStatus = document.getElementById('image-status');
-            const generateButton = document.getElementById('creator-button');
-            const apiKey = ""; // Canvas handles API key injection
-            
-            // --- Input Validation ---
-            if (!prompt) {
-                imageStatus.classList.remove('hidden', 'bg-blue-100');
-                imageStatus.classList.add('bg-red-100');
-                imageStatus.textContent = "Please enter a description for your Frog Cat meme edit!";
-                return;
-            }
-
-            if (!BASE_IMAGE_B64) {
-                 imageStatus.classList.remove('hidden', 'bg-blue-100');
-                 imageStatus.classList.add('bg-red-100');
-                 imageStatus.textContent = L10N[currentLang].creator_base_error;
-                 return;
-            }
-
-
-            // 1. Show Loading State
-            generateButton.disabled = true;
-            generateButton.classList.remove('bg-yellow-600');
-            generateButton.classList.add('bg-gray-400');
-
-            imageStatus.classList.remove('hidden', 'bg-red-100', 'bg-red-500');
-            imageStatus.classList.add('bg-blue-100');
-            imageStatus.textContent = L10N[currentLang].creator_loading;
-            document.getElementById('generated-image').src = '';
-            document.getElementById('generated-image').classList.add('hidden');
-
-
-            // 2. Prepare API Call (Switched to Imagen 3.0 Predict Endpoint for better stability)
-            // Model: imagen-3.0-generate-002 (used via the predict endpoint for image editing)
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
-            
-            // The prompt structure for Imagen 3.0 image editing via predict endpoint
-            const payload = {
-                instances: {
-                    // Combine base prompt with edit request to tell Imagen what to edit
-                    prompt: `Edit the provided image of the Frog Cat logo: ${prompt}.`, 
-                    image: {
-                        bytesBase64Encoded: BASE_IMAGE_B64.base64
-                    }
-                },
-                parameters: {
-                    sampleCount: 1, // Request only one image
-                    aspectRatio: "1:1", // Keep the logo square
-                    // Use a slightly lower guidance scale for subtle edits on a base image
-                    guidanceScale: 15 
-                }
-            };
-
-            const maxRetries = 3;
-            let response = null;
-            let success = false;
-
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    // Exponential backoff
-                    if (i > 0) {
-                        const delay = Math.pow(2, i) * 1000;
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    }
-                    
-                    response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (response.ok) {
-                        success = true;
-                        break;
-                    }
-                } catch (error) {
-                    console.error('Fetch attempt failed:', error);
-                }
-            }
-
-            // 3. Process Result
-            generateButton.disabled = false;
-            generateButton.classList.remove('bg-gray-400');
-            generateButton.classList.add('bg-yellow-600');
-            imageStatus.classList.remove('bg-blue-100');
-            
-            if (success && response) {
-                try {
-                    const result = await response.json();
-                    
-                    // Parsing response for Imagen 3.0 (predict endpoint)
-                    const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
-
-                    if (base64Data) {
-                        // Image URL setup
-                        const imageUrl = `data:image/png;base64,${base64Data}`;
-                        document.getElementById('generated-image').src = imageUrl;
-                        document.getElementById('generated-image').classList.remove('hidden');
-                        imageStatus.classList.add('hidden');
-
-                    } else {
-                        // Throw error if JSON structure is valid but no image data is present
-                        console.error('API Response Missing Data:', result);
-                        throw new Error("No image data received in valid response.");
-                    }
-                } catch (e) {
-                    console.error('Error processing image response:', e);
-                    imageStatus.textContent = L10N[currentLang].creator_error;
-                    imageStatus.classList.add('bg-red-100');
-                }
-            } else {
-                imageStatus.textContent = L10N[currentLang].creator_error + " (API Error: 403 or Timeout)";
-                imageStatus.classList.add('bg-red-100');
-            }
-        };
-
         // Initialize on load
         window.onload = () => {
             switchLang(currentLang);
-            
-            // FIX: Load the base image only after the DOM has rendered, which gives the browser time to resolve './tofu.jpg'
-            // We use setTimeout to ensure the browser has definitely processed the image src attribute.
-            setTimeout(loadBaseImage, 100); 
-
+            loadBaseImage();
+            document.getElementById('generate-button').addEventListener('click', generateImage);
             document.getElementById('ca-copy-button').addEventListener('click', copyCA);
-            document.getElementById('creator-button').addEventListener('click', generateImage);
         };
     </script>
 
@@ -504,7 +457,7 @@
                     <a href="#about" id="nav-about" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">About $TOFU</a>
                     <a href="#gallery" id="nav-gallery" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Meme Gallery</a>
                     <a href="#tiktok" id="nav-tiktok" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">TikTok Video</a>
-                    <a href="#ai-creator" id="nav-creator" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">AI Editor</a> <!-- UPDATED NAV TEXT -->
+                    <a href="#ai-creator" id="nav-creator" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">AI Creator</a>
                     <a href="#chart" id="nav-chart" class="text-gray-600 hover:text-yellow-600 font-bold transition duration-300 transform hover:scale-105">Live Chart</a>
                 </nav>
 
@@ -656,56 +609,43 @@
             </div>
         </section>
         <!-- End TikTok Video Section -->
-
-        <!-- AI Creator Section (UPDATED FOR IMAGE EDITING) -->
+        
+        <!-- AI Frog Cat Creator Section (Re-added, trying gemini-2.5-flash-preview-05-20) -->
         <section id="ai-creator" class="mt-16 pt-8">
-            <!-- UPDATED: Title to Editor -->
+            <!-- UPDATED: Section Title text color from text-purple-600 to text-yellow-700 -->
             <h2 id="creator-title" class="text-center font-meme text-5xl text-yellow-700 mb-8 pb-4 border-b-4 border-yellow-500">
-                AI Frog Cat Editor
+                AI Frog Cat Editor (Experimental)
             </h2>
-            <div class="bg-white card shadow-2xl p-6 space-y-6">
+            
+            <div class="bg-white card shadow-xl p-6 space-y-6">
                 
+                <p id="creator-subtitle" class="text-center text-lg font-medium text-gray-600">Edit the $TOFU logo with a text prompt!</p>
+
                 <!-- Base Image Preview -->
-                <div class="text-center">
-                    <h3 class="font-bold text-xl mb-2 text-gray-700">Image to be Edited (Frog Cat Logo)</h3>
-                    <div id="base-image-status" class="text-sm text-blue-500 mb-2">Loading base image...</div>
-                    <!-- UPDATED SRC: Using local file -->
-                    <img id="base-image-preview" 
-                         src="./tofu.jpg" 
-                         alt="Base Frog Cat Logo" 
-                         class="mx-auto h-24 w-24 rounded-full ring-4 ring-yellow-500 object-cover opacity-50 transition duration-500">
+                <div class="flex flex-col items-center space-y-2">
+                    <img id="base-image-preview" src="" alt="Base Frog Cat Logo" class="h-24 w-24 rounded-full ring-4 ring-yellow-400 object-cover">
+                    <p id="base-image-status" class="text-sm font-semibold text-green-500">Loading...</p>
                 </div>
 
-                <!-- Input and Button -->
+                <!-- Prompt Input and Button -->
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <input type="text" id="creator-prompt" 
-                           class="flex-grow p-4 border-2 border-gray-300 rounded-lg text-lg focus:ring-yellow-500 focus:border-yellow-500 font-inter"
-                           placeholder="Describe the modification (e.g., Add a gold crown and a royal robe)...">
-                           
-                    <button id="creator-button"
-                            class="flex-shrink-0 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-8 rounded-lg text-lg shadow-xl transition duration-300 transform hover:scale-[1.02] active:scale-95">
+                    <input type="text" id="prompt-input" 
+                           placeholder="Describe the modification (e.g., Add a golden crown and a royal robe)..." 
+                           class="flex-grow p-3 border-2 border-yellow-300 rounded-xl focus:ring-yellow-500 focus:border-yellow-500 font-inter text-gray-800 shadow-md">
+                    
+                    <button id="generate-button" 
+                            class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-xl text-lg shadow-xl transition duration-300 transform hover:scale-[1.02] disabled:opacity-50">
                         Edit Frog Cat Image
                     </button>
                 </div>
 
-                <!-- Image Display Area -->
-                <div id="generated-image-container" class="relative w-full aspect-square bg-gray-100 rounded-xl overflow-hidden shadow-inner flex items-center justify-center">
-                    
-                    <!-- Loading/Status Message -->
-                    <div id="image-status" class="hidden absolute top-0 left-0 w-full h-full flex items-center justify-center text-center text-gray-700 font-semibold p-4 rounded-xl">
-                        <!-- Content updated by JS -->
-                    </div>
-
-                    <!-- Generated Image -->
-                    <img id="generated-image" 
-                         src="" 
-                         alt="Generated AI Frog Cat Meme" 
-                         class="w-full h-full object-cover rounded-xl hidden"
-                         style="max-width: 100%; max-height: 100%;">
+                <!-- Generated Image Output -->
+                <div id="generated-image" class="w-full rounded-xl shadow-inner p-4 transition duration-500">
+                    <p class="ai-status">Image generation results will appear here.</p>
                 </div>
             </div>
         </section>
-        <!-- End AI Creator Section -->
+
 
         <!-- Live Dexscreener Chart Section -->
         <section id="chart" class="mt-16 pt-8">
